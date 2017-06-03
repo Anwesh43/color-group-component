@@ -6,9 +6,11 @@ class ColorFilterGroup extends HTMLElement{
         const shadow = this.attachShadow({mode:'open'})
         shadow.appendChild(this.img)
         this.colors = this.getAttributes('colors').split(",")
+        this.colors = this.colors.map((color)=>new ColorFilter(color))
+        this.index = this.colors.length - 1
     }
     render() {
-
+        
     }
     connectedCallback() {
         this.render()
@@ -38,9 +40,25 @@ class ColorFilter  {
     constructor(color) {
         this.scale = 0
         this.color = color
+        this.dir = 0
     }
     draw(context) {
         context.fillStyle = this.color
         context.fillRect(0,0,w,h*this.scale)
+    }
+    startUpdating(dir) {
+        this.dir = dir
+    }
+    update() {
+        this.scale += 0.1*this.dir
+        if(this.scale <= 0) {
+            this.dir = 0
+        }
+        if(this.scale >= 1) {
+            this.dir = 0
+        }
+    }
+    stopped() {
+        return this.dir == 0
     }
 }
