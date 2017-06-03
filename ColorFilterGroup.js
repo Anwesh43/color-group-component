@@ -117,3 +117,4 @@ class ColorFilter  {
         return this.dir == 0
     }
 }
+customElements.define('color-filter-group',ColorFilterGroup)
