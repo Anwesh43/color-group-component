@@ -1,3 +1,4 @@
+const w = window.innerWidth,h = window.innerHeight
 class ColorFilterGroup extends HTMLElement{
     constructor() {
         super()
@@ -15,14 +16,21 @@ class ColorFilterGroup extends HTMLElement{
 }
 class Arrow {
     constructor(dir) {
-        this.x = window.innerWidth - window.innerWidth /10
-        this.y = window.innerHeight*0.8
+        this.x = w*0.9
+        this.y = h*0.8
         this.dir = dir
     }
-    draw() {
-
+    draw(context) {
+        context.lineWidth = w/30
+        context.save()
+        context.translate(this.x,this.y)
+        context.beginPath()
+        context.moveTo(0,0)
+        context.lineTo(0,this.dir*h*0.1)
+        context.stroke()
+        context.restore()
     }
     handleTap(x,y) {
-
+        return x>=this.x - w/30 && x<=this.x+w/30 && ((this.dir == 1 && y>= this.y && y<=this.y+0.1*h) || (this.dir == -1 && y <= this.y && y>=this.y-0.1*h))
     }
 }
