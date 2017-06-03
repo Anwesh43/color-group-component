@@ -29,7 +29,7 @@ class ColorFilterGroup extends HTMLElement{
             var colorFilter = null
             const x = event.offsetX ,y = event.offsetY
             this.arrows.forEach((arrow)=>{
-                if(arrow.handleTap(x,y) == true) {
+                if(arrow.handleTap(x,y,this.index,this.colors.length) == true) {
                     colorFilter = this.colors[this.index]
                     colorFilter.startUpdating(arrow.getDir())
                     return
@@ -68,19 +68,19 @@ class Arrow {
         context.save()
         context.translate(this.x,this.y)
         context.beginPath()
-        context.moveTo(0,0)
+        context.moveTo(0,this.dir*h*0.01)
         context.lineTo(0,this.dir*h*0.1)
         context.stroke()
         context.beginPath()
-        context.moveTo(h*0.05,this.dir*h*0.05)
+        context.moveTo(h*0.03,this.dir*h*0.07)
         context.lineTo(0,this.dir*h*0.1)
-        context.lineTo(-h*0.05,this.dir*h*0.05)
+        context.lineTo(-h*0.03,this.dir*h*0.07)
         context.stroke()
         context.restore()
     }
 
-    handleTap(x,y) {
-        return x>=this.x - h*0.1 && x<=this.x+h*0.1 && ((this.dir == 1 && y>= this.y && y<=this.y+0.1*h) || (this.dir == -1 && y <= this.y && y>=this.y-0.1*h))
+    handleTap(x,y,index,size) {
+        return x>=this.x - h*0.1 && x<=this.x+h*0.1 && ((index != length-1 && this.dir == 1 && y>= this.y && y<=this.y+0.1*h) || (index != 0 && this.dir == -1 && y <= this.y && y>=this.y-0.1*h))
     }
     getDir() {
         return this.dir
