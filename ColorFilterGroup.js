@@ -5,11 +5,10 @@ class ColorFilterGroup extends HTMLElement{
         this.img = document.createElement('img')
         const shadow = this.attachShadow({mode:'open'})
         shadow.appendChild(this.img)
-        this.colors = this.getAttributes('colors').split(",")
+        this.colors = this.getAttribute('colors').split(",")
         this.colors = this.colors.map((color)=>new ColorFilter(color))
         this.index = this.colors.length - 1
         this.arrows = [new Arrow(1),new Arrow(-1)]
-        this.colorFilter = null
     }
     render() {
         const canvas = document.createElement('canvas')
@@ -19,18 +18,20 @@ class ColorFilterGroup extends HTMLElement{
         this.colors.forEach((color)=>{
             color.draw(context)
         })
+        this.arrows.forEach((arrow)=>{
+            arrow.draw(context)
+        })
         this.img.src = canvas.toDataURL()
-
     }
     connectedCallback() {
         this.render()
         this.img.onmousedown = (event) => {
-            const colorFilter = null
+            var colorFilter = null
             const x = event.offsetX ,y = event.offsetY
             this.arrows.forEach((arrow)=>{
                 if(arrow.handleTap(x,y) == true) {
                     colorFilter = this.colors[this.index]
-                    colorFilter.startUpdating(this.dir)
+                    colorFilter.startUpdating(arrow.getDir())
                     return
                 }
             })
@@ -38,7 +39,7 @@ class ColorFilterGroup extends HTMLElement{
                 const interval = setInterval(() => {
                     colorFilter.update()
                     if(colorFilter.stopped() == true) {
-                        this.index += this.colorFilter.getPrevDir()
+                        this.index += colorFilter.getPrevDir()
                         this.render()
                         clearInterval(interval)
                         if(this.index >= this.colors.length) {
@@ -60,29 +61,34 @@ class Arrow {
         this.x = w*0.9
         this.y = h*0.8
         this.dir = dir
-        this.prevDir = 0
     }
     draw(context) {
-        context.lineWidth = w/30
+        context.strokeStyle = 'white'
+        context.lineWidth = w/200
         context.save()
         context.translate(this.x,this.y)
         context.beginPath()
         context.moveTo(0,0)
         context.lineTo(0,this.dir*h*0.1)
         context.stroke()
+        context.beginPath()
+        context.moveTo(h*0.05,this.dir*h*0.05)
+        context.lineTo(0,this.dir*h*0.1)
+        context.lineTo(-h*0.05,this.dir*h*0.05)
+        context.stroke()
         context.restore()
     }
 
     handleTap(x,y) {
-        return x>=this.x - w/30 && x<=this.x+w/30 && ((this.dir == 1 && y>= this.y && y<=this.y+0.1*h) || (this.dir == -1 && y <= this.y && y>=this.y-0.1*h))
+        return x>=this.x - h*0.1 && x<=this.x+h*0.1 && ((this.dir == 1 && y>= this.y && y<=this.y+0.1*h) || (this.dir == -1 && y <= this.y && y>=this.y-0.1*h))
     }
     getDir() {
-        return dir
+        return this.dir
     }
 }
 class ColorFilter  {
     constructor(color) {
-        this.scale = 0
+        this.scale = 1
         this.color = color
         this.dir = 0
         this.prevDir = 0
@@ -98,6 +104,7 @@ class ColorFilter  {
       return this.prevDir
     }
     update() {
+        console.log(`the direction is ${this.dir}`)
         this.scale += 0.1*this.dir
         if(this.scale < 0) {
             this.resetDir()
