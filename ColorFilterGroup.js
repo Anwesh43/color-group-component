@@ -10,7 +10,14 @@ class ColorFilterGroup extends HTMLElement{
         this.index = this.colors.length - 1
     }
     render() {
-        
+        const canvas = document.createElement('canvas')
+        canvas.width = w
+        canvas.height = h
+        const context = canvas.getContext('2d')
+        this.colors.forEach((color)=>{
+            color.draw(context)
+        })
+        this.img.src = canvas.toDataURL()
     }
     connectedCallback() {
         this.render()
