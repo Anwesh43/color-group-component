@@ -34,3 +34,13 @@ class Arrow {
         return x>=this.x - w/30 && x<=this.x+w/30 && ((this.dir == 1 && y>= this.y && y<=this.y+0.1*h) || (this.dir == -1 && y <= this.y && y>=this.y-0.1*h))
     }
 }
+class ColorFilter  {
+    constructor(color) {
+        this.scale = 0
+        this.color = color
+    }
+    draw(context) {
+        context.fillStyle = this.color
+        context.fillRect(0,0,w,h*this.scale)
+    }
+}
